@@ -1,19 +1,21 @@
 ---
 tags:
-    - LIS
+    - ダブリング
 ---
 
-# ARC126-B
+# ABC167-D
 
-[問題](https://atcoder.jp/contests/arc126/tasks/arc126_b)
+[問題](https://atcoder.jp/contests/abc167/tasks/abc167_d)
 
 ## 考察
 
-選択した線分のaが昇順でかつbが昇順であれば、線分は交差しない。線分の本数を最大化するためには、aでソートした後にbの最長増加部分列(LIS)を求めればよい。
+周期性よりダブリングを使用することで十分高速に解を得られる。
 
 ## 計算量
 
-LIS：O(MlogM)
+ダブリング：O(NlogK)
+よって、総計算量は
+O(NlogK)
 
 ## コーディング
 
@@ -43,31 +45,29 @@ inline bool chmin(T &x, U y) {return x > y ? (x = y, true) : false;}
 // const int MOD = 1000000007;
 // const int MOD = 998244353;
 
-const int INF = 1 << 30;
-
 int main()
 {
-    int n, m;
-    cin >> n >> m;
+    int n;
+    ll k;
+    cin >> n >> k;
 
-    vi a(m), b(m);
-    rep(i, m) cin >> a[i] >> b[i];
+    vi a(n);
+    rep(i, n) cin >> a[i];
+    rep(i, n) a[i]--;
 
-    vi ids(m);
-    rep(i, m) ids[i] = i;
+    int d[61][200010];
+    rep(j, n) d[0][j] = a[j];
+    rep(i, 60) rep(j, n) d[i + 1][j] = d[i][d[i][j]];
 
-    sort(all(ids), [&](int i, int j){
-        if (a[i] != a[j]) return a[i] < a[j];
-        else return b[i] > b[j];
-    });
-
-    vi dp(m, INF);
-    rep(i, m) {
-        // 狭義単調増加
-        *lower_bound(all(dp), b[ids[i]]) = b[ids[i]];
+    int now = 0;
+    rrng(i, 0, 61) {
+        if (1LL << i <= k) {
+            k -= 1LL << i;
+            now = d[i][now];
+        }
     }
 
-    cout << lower_bound(all(dp), INF) - dp.begin() << endl;
+    cout << now + 1 << endl;
 
     return 0;
 }

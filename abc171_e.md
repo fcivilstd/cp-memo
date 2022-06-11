@@ -1,19 +1,21 @@
 ---
 tags:
-    - LIS
+    - 排他的論理和
 ---
 
-# ARC126-B
+# ABC171-E
 
-[問題](https://atcoder.jp/contests/arc126/tasks/arc126_b)
+[問題](https://atcoder.jp/contests/abc171/submissions/32273731)
 
 ## 考察
 
-選択した線分のaが昇順でかつbが昇順であれば、線分は交差しない。線分の本数を最大化するためには、aでソートした後にbの最長増加部分列(LIS)を求めればよい。
+偶数回同じ値の排他的論理和をとると0になる。この性質を用いれば、与えられたすべての整数の排他的論理和をとった値とaiの排他的論理和をとると、求めるiの整数が得られる。
 
 ## 計算量
 
-LIS：O(MlogM)
+すべての整数の排他的論理和：O(N)
+よって、総計算量は
+O(N)
 
 ## コーディング
 
@@ -43,31 +45,21 @@ inline bool chmin(T &x, U y) {return x > y ? (x = y, true) : false;}
 // const int MOD = 1000000007;
 // const int MOD = 998244353;
 
-const int INF = 1 << 30;
-
 int main()
 {
-    int n, m;
-    cin >> n >> m;
+    int n;
+    cin >> n;
 
-    vi a(m), b(m);
-    rep(i, m) cin >> a[i] >> b[i];
+    vi a(n);
+    rep(i, n) cin >> a[i];
 
-    vi ids(m);
-    rep(i, m) ids[i] = i;
+    int tot = 0;
+    rep(i, n) tot ^= a[i];
 
-    sort(all(ids), [&](int i, int j){
-        if (a[i] != a[j]) return a[i] < a[j];
-        else return b[i] > b[j];
-    });
+    vi ans(n);
+    rep(i, n) ans[i] = tot ^ a[i];
 
-    vi dp(m, INF);
-    rep(i, m) {
-        // 狭義単調増加
-        *lower_bound(all(dp), b[ids[i]]) = b[ids[i]];
-    }
-
-    cout << lower_bound(all(dp), INF) - dp.begin() << endl;
+    rep(i, n) cout << ans[i] << " \n"[i == n - 1];
 
     return 0;
 }
